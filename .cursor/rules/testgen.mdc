@@ -1,0 +1,51 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: >
+globs: **/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp,**/*.hh,**/*.hxx,CMakeLists.txt,**/*.cmake,Makefile,makefile,GNUmakefile,conanfile.txt,**/*.py,**/*.sh,**/*.bash,**/*.tf,**/*.tfvars,**/*.json,**/*.yaml,**/*.yml,**/*.toml
+alwaysApply: false
+---
+
+Generate unit tests following the Pylons Project testing principles:
+
+## Key Principles:
+1. **Test Just One Thing** - Each test method should exercise one set of preconditions for one method/function
+2. **Avoid Cleverness** - Tests should be simple and clear, even if it means repeating code
+3. **No Module-Level Imports** - Import the module-under-test within test methods, not at module scope
+4. **Clear Test Names** - Name tests to indicate exactly what they test (e.g., `test_getBar_wo_baz`)
+
+## Test Structure Pattern:
+```python
+class FooClassTests(unittest.TestCase):
+    def _getTargetClass(self):
+        from package.foo import FooClass
+        return FooClass
+
+    def _makeOne(self, *args, **kw):
+        return self._getTargetClass()(*args, **kw)
+
+    def test_specific_scenario(self):
+        # 1. Set up preconditions
+        # 2. Call method/function exactly once
+        # 3. Make assertions about return value/side effects
+        # 4. Do nothing else
+```
+
+## Guidelines:
+- **No doctests** - Use proper unit tests instead
+- **Simple fixtures** - Start with empty mock classes, add only what's needed
+- **Helper methods over setUp** - Use `_makeContext()` instead of `self.context` in setUp
+- **No shared fixtures between modules** - Each test module should be self-contained
+- **Mock external dependencies** - Keep contracts simple and clear
+
+## Focus Areas:
+- Test each function/method with different preconditions
+- Use mock objects for file I/O, external libraries
+- Test error conditions as separate test cases
+- Ensure test failures are easy to diagnose
+
+Run tests with: `uv run pytest tests/`
+Check coverage (but don't obsess over 100%): `uv run pytest --cov --cov-report term-missing tests/`

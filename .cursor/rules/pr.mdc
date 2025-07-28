@@ -1,0 +1,55 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: >
+globs: **/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp,**/*.hh,**/*.hxx,CMakeLists.txt,**/*.cmake,Makefile,makefile,GNUmakefile,conanfile.txt,**/*.py,**/*.sh,**/*.bash,**/*.tf,**/*.tfvars,**/*.json,**/*.yaml,**/*.yml,**/*.toml
+alwaysApply: false
+---
+
+# Create or Update Pull Request
+
+This command creates a new PR or updates an existing one for the current branch.
+
+## Steps:
+
+1. **Get current branch and check if it's main/master**
+   - Exit if on main/master branch
+
+2. **Find the base branch** (where current branch started from)
+   - Use `git merge-base` to find the common ancestor
+   - Determine the parent branch (usually main or develop)
+
+3. **Check if PR already exists**
+   - Use `gh pr list` to check for existing PR
+
+4. **Collect all JIRA tags from commits**
+   - Get all commits between base branch and HEAD
+   - Extract unique JIRA tags (format: XXX-####)
+   - Sort tags for consistent ordering
+
+5. **Generate PR title**
+   - Format: "[TAG-1] [TAG-2] Description"
+   - Extract meaningful description from commit messages
+   - If no JIRA tags found, use branch name
+
+6. **Generate PR description**
+   - **Start with a brief summary highlighting the key features/changes of this PR**
+   - Group commits by JIRA tag
+   - Create sections for each tag with related changes
+   - Include test plan checklist
+   - List breaking changes if any
+   - **DO NOT include "🤖 Generated with Claude Code" or any Claude attribution**
+
+7. **Create or update PR**
+   - If PR doesn't exist: `gh pr create`
+   - If PR exists: `gh pr edit`
+   - Set base branch, title, and body
+
+## Important Notes:
+- The base branch is automatically detected (where the branch diverged from)
+- All JIRA tags from commits are included in the title
+- The description is organized by JIRA tag for clarity
+- No Claude attribution is added to the PR

@@ -1,0 +1,64 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+---
+description: >
+globs: **/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp,**/*.hh,**/*.hxx,CMakeLists.txt,**/*.cmake,Makefile,makefile,GNUmakefile,conanfile.txt,**/*.py,**/*.sh,**/*.bash,**/*.tf,**/*.tfvars,**/*.json,**/*.yaml,**/*.yml,**/*.toml
+alwaysApply: false
+---
+
+# Version Bump Handler
+
+This command automates version bumps when only the `pyproject.toml` version field is changed.
+
+## Process:
+
+1. **Check git status**
+   - Verify we're not on main/master branch
+   - Ensure working directory is clean except for pyproject.toml
+
+2. **Validate changes**
+   - Check if pyproject.toml is the only changed file
+   - If not, exit with message: "Error: Other files besides pyproject.toml are modified"
+
+3. **Verify version change**
+   - Extract old version from HEAD
+   - Extract new version from working directory
+   - Check if only the `version` field in `[project]` section changed
+   - If other changes exist, exit with message: "Error: Changes detected beyond version field"
+
+4. **Parse version**
+   - Extract version number (e.g., "5.0.0-rc0" from project.version)
+   - Determine tag format:
+     - For RC versions (e.g., "5.0.0-rc0"), tag as "v5.0.0-rc0"
+     - For release versions (e.g., "5.0.0"), tag as "v5.0.0"
+
+5. **Create commit**
+   - Stage pyproject.toml
+   - Commit with message: "bump up v{version}"
+   - No JIRA tag needed for version bumps
+
+6. **Tag the commit**
+   - Create annotated tag with the version
+   - Tag message: "Release {version}"
+
+7. **Push to remote**
+   - Push the commit to current branch
+   - Push the tag to remote
+
+## Example:
+- If version changes from "4.9.0" to "5.0.0-rc0":
+  - Commit message: "bump up v5.0.0-rc0"
+  - Tag: "v5.0.0-rc0"
+
+- If version changes from "5.0.0-rc0" to "5.0.0":
+  - Commit message: "bump up v5.0.0"
+  - Tag: "v5.0.0"
+
+## Important Notes:
+- Only processes version-only changes in pyproject.toml
+- Automatically creates and pushes tags
+- No JIRA tag required for version commits
+- Fails fast if any validation step fails
