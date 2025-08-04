@@ -10,56 +10,72 @@ alwaysApply: false
 ---
 
 
-Create atomic git commits following Conventional Commits specification:
+Conventional Commits 규격에 따라 **원자적(atomic) Git 커밋**을 생성하세요:
 
-1. Check current branch and warn if on main
-2. Show git status and diff to understand all changes
-3. **Analyze changes for atomic commits by type**:
-   - **CRITICAL**: Split different commit types into separate atomic commits even within the same file
-   - Group changes by logical purpose and commit type (each commit should be the smallest meaningful change)
-   - Separate unrelated changes into different commits
-   - **Never mix commit types** (e.g., feat + docs in same commit)
-   - Common atomic groupings:
-     - Feature implementation separate from tests
-     - Bug fixes separate from refactoring
-     - Documentation updates separate from code changes
-     - Dependency updates separate from implementation
-     - **Same file, different types**: Split feat/fix/docs changes in the same file into separate commits
-4. **Create atomic commits** (repeat for each logical group):
-   a. Use `git add -p` or selective staging to include only related changes
-   b. Determine commit type:
-      - `feat`: New feature
-      - `fix`: Bug fix
-      - `docs`: Documentation only changes
-      - `style`: Changes that don't affect code meaning (white-space, formatting)
-      - `refactor`: Code change that neither fixes a bug nor adds a feature
-      - `perf`: Performance improvement
-      - `test`: Adding missing tests or correcting existing tests
-      - `build`: Changes to build system or dependencies
-      - `ci`: Changes to CI configuration files and scripts
-      - `chore`: Other changes that don't modify src or test files
-   c. Draft commit message: `[<jira-tag>] <type>[optional scope]: <description>`
-      - **JIRA TAG**: If user mentions "Use jira tag XXX-####", use that tag (e.g., [PII-1141])
-      - Otherwise, extract from current git branch name (e.g., branch PII-1141 → [PII-1141])
-      - One-liner description in imperative mood (e.g., "add" not "adds")
-      - Keep under 120 characters (including jira tag prefix)
-      - Focus on single purpose
-      - Example: `[PII-1141] fix: resolve memory leak in data processor`
-   d. Create the commit
-5. Show final git log to confirm atomic commits
-6. Push all commits to remote (do not push if it is the main branch)
+1. **현재 브랜치 확인**
+   - main 브랜치인 경우 경고를 표시하고 커밋 생성을 중단합니다.
 
-ATOMIC COMMIT PRINCIPLES:
-- Each commit serves a single, discrete purpose
-- Commits should be self-contained and meaningful
-- **NEVER mix different commit types** (e.g., feat + docs, fix + refactor)
-- **Split changes by type even within the same file** (e.g., feature code vs documentation in same file)
-- If you can't describe the commit in one line, it's probably not atomic
-- Commit early and often, but with purpose
-- **Use selective staging** (`git add -p`) to separate changes by type within files
+2. **변경 사항 파악**
+   - `git status` 와 `git diff` 를 실행하여 모든 변경 내용을 확인합니다.
 
-IMPORTANT:
-- Break down large changes into multiple atomic commits
-- Use selective staging (`git add -p`) to group related changes
-- Each commit should pass tests independently when possible
-- Review each commit's diff before proceeding to the next
+3. **커밋 유형별로 변경 사항 분석 및 분리**
+   - **중요**: 하나의 파일 안에 서로 다른 커밋 유형이 섞여 있다면 `git add -p` 를 사용해 분리합니다.
+   - 논리적 목적과 커밋 타입별로 그룹화하여 **가장 작은 의미 있는 단위**로 나눕니다.
+   - 서로 관련 없는 변경은 반드시 별도 커밋으로 분리합니다.
+   - **커밋 타입 혼합 금지** (예: 하나의 커밋에 `feat` + `docs` 금지).
+   - 일반적인 분리 예시
+     - 기능 구현( `feat` ) ↔ 테스트( `test` )
+     - 버그 수정( `fix` ) ↔ 리팩터링( `refactor` )
+     - 문서 갱신( `docs` ) ↔ 코드 변경
+     - 의존성 업데이트( `build` ) ↔ 기능 구현
+     - **동일 파일 내**라도 `feat`/`fix`/`docs` 등은 각각 다른 커밋으로 분리
+
+4. **원자적 커밋 생성 절차** (논리 그룹마다 반복)
+   a. `git add -p` 또는 선택적 스테이징으로 관련 변경만 단계적으로 추가
+   b. 커밋 유형 결정
+      - `feat`: 새로운 기능
+      - `fix`: 버그 수정
+      - `docs`: 문서 변경만 포함
+      - `style`: 코드 의미에 영향이 없는 포맷/스타일 변경
+      - `refactor`: 기능 추가·버그 수정이 아닌 구조 변경
+      - `perf`: 성능 개선
+      - `test`: 테스트 추가/수정
+      - `build`: 빌드 시스템·의존성 변경
+      - `ci`: CI 구성/스크립트 변경
+      - `chore`: 기타 소스·테스트 외 변경
+   c. 커밋 메시지 작성 형식: `[<jira-tag>] <type>[optional scope]: <description>`
+      - **JIRA 태그**: 사용자가 "Use jira tag XXX-####" 라고 지시하면 해당 태그 사용(예: `[PII-1141]`).
+      - 그렇지 않으면 현재 브랜치명에서 추출(예: 브랜치 `PII-1141` → `[PII-1141]`).
+      - 명령형 한 줄 설명(예: "add" 권장, "adds" 지양).
+      - JIRA 태그 포함 120자 이하 유지.
+      - 하나의 목적에 집중.
+      - 예: `[PII-1141] fix: resolve memory leak in data processor`
+   d. 커밋 생성.
+
+5. **최종 Git 로그 확인**
+   - 커밋이 의도대로 나뉘었는지 확인합니다.
+
+6. **원격 저장소 푸시**
+   - main 브랜치가 아니라면 모든 커밋을 원격에 푸시합니다.
+
+---
+
+## 원자적 커밋 원칙(Atomic Commit Principles)
+
+- 각 커밋은 **단일하고 분리된 목적**을 가져야 합니다.
+- 커밋은 **스스로 완결**되어야 하며, 의미가 명확해야 합니다.
+- **커밋 타입을 혼합하지 마세요**(`feat` + `docs`, `fix` + `refactor` 등).
+- **동일 파일**이라도 변경 유형별로 분리합니다(예: 기능 코드 vs 문서).
+- 한 줄로 설명할 수 없다면 원자적 커밋이 아닐 가능성이 높습니다.
+- 목적을 가지고 **자주 커밋**하세요.
+- `git add -p` 를 적극 활용하여 세밀하게 스테이징하세요.
+
+---
+
+## 중요(IMPORTANT)
+
+- 큰 변경은 여러 개의 원자적 커밋으로 **분할**하십시오.
+- `git add -p` 로 관련 변경만 **그룹화**하십시오.
+- 각 커밋은 가능하다면 **독립적으로 테스트**를 통과해야 합니다.
+- 다음 단계로 진행하기 전 **diff** 를 꼼꼼히 검토하십시오.
+
